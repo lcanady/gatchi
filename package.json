@@ -1,0 +1,19 @@
+{
+  "name": "gotchi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "scripts": {
+    "migrate:local": "ganache-cli && truffle migrate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "@truffle/hdwallet-provider": "^2.0.3",
+    "dotenv": "^16.0.0",
+    "ganache-cli": "^6.12.2",
+    "truffle-plugin-verify": "^0.5.21"
+  }
+}

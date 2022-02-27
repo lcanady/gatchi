@@ -193,7 +193,7 @@
   resolved "https://registry.yarnpkg.com/@metamask/safe-event-emitter/-/safe-event-emitter-2.0.0.tgz#af577b477c683fad17c619a78208cede06f9605c"
   integrity sha512-/kSXhY692qiV1MXu6EeOZvg5nECLclxNXcKCxJ3cXQgYuRymRHpdx/t7JXfsK+JLjwA1e1c1/SBrlQYpusC29Q==
 
-"@openzeppelin/contracts@^4.5.0":
+"@openzeppelin/contracts@^4.4.2", "@openzeppelin/contracts@^4.5.0":
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.5.0.tgz#3fd75d57de172b3743cdfc1206883f56430409cc"
   integrity sha512-fdkzKPYMjrRiPK6K4y64e6GzULR7R7RwxSigHS8DDp7aWDeoReqsQI+cxHV1UuhAqX69L1lAaWDxenfP+xiqzA==
@@ -718,6 +718,13 @@ end-of-stream@^1.1.0:
   integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
   dependencies:
     once "^1.4.0"
+
+erc721a@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/erc721a/-/erc721a-3.0.0.tgz#1cf05961012c956aedd54449203da39f8397d55b"
+  integrity sha512-h6sbDZ9OBZwDqifjhdGWV6XJapr8aVyN3ZrqjsVKtzNcwzJyolcQrESaOrcvxrDPxbC7F0FmmWUqd80ZBKv+gA==
+  dependencies:
+    "@openzeppelin/contracts" "^4.4.2"
 
 errno@~0.1.1:
   version "0.1.8"

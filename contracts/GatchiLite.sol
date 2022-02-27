@@ -13,14 +13,21 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract Gatchi is ERC1155, Ownable {
     using Strings for string;
 
-    uint256 constant TOTAL_CORES = 5000;
-    uint256 constant RATE = 1000000000000000000;
+    uint256 constant RATE = 86400;
+    uint256 constant STAGES = 3;
+    uint256 TOTAL_GATCHI = 5000;
 
     string _name;
     string _symbol;
     string _baseURI;
-    uint256 count;
-    uint256 price = 20000000000000000000;
+
+    struct GachiLite {
+        uint256 stage;
+        uint256 bornOn;
+        bool initiated;
+    }
+
+    mapping(uint256 => GachiLite) gatchi;
 
     constructor(
         string memory name_,
@@ -31,10 +38,16 @@ contract Gatchi is ERC1155, Ownable {
         _symbol = symbol_;
     }
 
+    /**
+     * @notice Get the name of the token.
+     */
     function name() public view returns (string memory) {
         return _name;
     }
 
+    /**
+     * @notice Get the symbol of the token.
+     */
     function symbol() public view returns (string memory) {
         return _symbol;
     }
@@ -43,34 +56,26 @@ contract Gatchi is ERC1155, Ownable {
         _baseURI = _uri;
     }
 
-    /**
-     * @notice Get the current price of a Gatchi
-     * @param _num The number of gatchi to mint!
-     */
-    function getPrice(uint256 _num) public view returns (uint256) {
-        uint256 multiplier = (count + _num) / RATE;
-        uint256 adjusted = RATE * multiplier;
-        return price + adjusted;
-    }
+    function getStage(uint256 _id) public view returns (uint256) {
+        uint256 stage = gatchi[_id].bornOn / RATE;
 
-    /**
-     * @notice Mint a PWRCRE!
-     * @param _amt The numver of cores to mint.
-     */
-    function mint(uint256 _amt) public payable {
-        require(msg.value >= getPrice(_amt));
-        require(count + _amt <= TOTAL_CORES);
-
-        uint256 i = 0;
-        for (i = 0; i < _amt; i++) {
-            _mint(msg.sender, count + 1, 1, "0x0");
+        if (stage <= STAGES) {
+            return stage;
         }
+
+        return STAGES;
     }
 
     function uri(uint256 tokenId) public view override returns (string memory) {
         return
             string(
-                abi.encodePacked(_baseURI, Strings.toString(tokenId), ".json")
+                abi.encodePacked(
+                    _baseURI,
+                    Strings.toString(getStage(tokenId)),
+                    "/",
+                    Strings.toString(tokenId),
+                    ".json"
+                )
             );
     }
 }

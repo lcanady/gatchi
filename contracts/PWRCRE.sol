@@ -15,6 +15,7 @@ contract Gatchi is ERC1155, Ownable {
 
     uint256 constant TOTAL_CORES = 5000;
     uint256 constant RATE = 1000000000000000000;
+    uint256 constant PER = 20;
 
     string _name;
     string _symbol;
@@ -73,7 +74,7 @@ contract Gatchi is ERC1155, Ownable {
 
         uint256 i = 0;
         for (i = 0; i < _num; i++) {
-            multiplier = (count + i) / RATE;
+            multiplier = (count + i) / PER;
             adjusted = RATE * multiplier;
             ret += price + adjusted;
         }

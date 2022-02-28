@@ -6,8 +6,8 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 /*
- * @ title Gatchi pet!
- * @ Author Lem Canady
+ * @title Gatchi pet!
+ * @Author Lem Canady
  */
 
 contract Gatchi is ERC1155, Ownable {
@@ -24,6 +24,7 @@ contract Gatchi is ERC1155, Ownable {
     struct GachiLite {
         uint256 stage;
         uint256 bornOn;
+        uint256 variant;
         bool initiated;
     }
 
@@ -52,6 +53,9 @@ contract Gatchi is ERC1155, Ownable {
         return _symbol;
     }
 
+    /**
+     * @notice Set the baseURI
+     */
     function setURI(string memory _uri) public {
         _baseURI = _uri;
     }

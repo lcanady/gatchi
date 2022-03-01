@@ -10,27 +10,29 @@ import "@openzeppelin/contracts/utils/Strings.sol";
  * @Author Lem Canady
  */
 
-contract Gatchi is ERC1155, Ownable {
+contract PWRCRE is ERC1155, Ownable {
     using Strings for string;
 
     uint256 constant TOTAL_CORES = 5000;
     uint256 constant RATE = 1000000000000000000;
-    uint256 constant PER = 20;
+    uint256 constant PER = 10;
 
     string _name;
     string _symbol;
     string _baseURI;
     uint256 count;
-    address[] list;
-    uint256 price = 20000000000000000000;
+
+    mapping(uint256 => address) coreToAddress;
+    uint256 price = 30000000000000000000;
 
     constructor(
         string memory name_,
         string memory symbol_,
-        string memory _uri
-    ) ERC1155(_uri) {
+        string memory uri_
+    ) ERC1155(uri_) {
         _name = name_;
         _symbol = symbol_;
+        _baseURI = uri_;
     }
 
     /**
@@ -83,6 +85,13 @@ contract Gatchi is ERC1155, Ownable {
     }
 
     /**
+     * @notice Get the current count.
+     */
+    function getCount() public view returns (uint256) {
+        return count;
+    }
+
+    /**
      * @notice get a semi-random number!
      * @param _seed A seed to help randomize the number.
      */
@@ -94,10 +103,10 @@ contract Gatchi is ERC1155, Ownable {
                         _seed,
                         block.difficulty,
                         block.timestamp,
-                        list.length
+                        count
                     )
                 )
-            ) % list.length;
+            ) % count;
     }
 
     /**
@@ -105,12 +114,14 @@ contract Gatchi is ERC1155, Ownable {
      * @param _amt The numver of cores to mint.
      */
     function mint(uint256 _amt) public payable {
-        require(msg.value >= getPrice(_amt));
-        require(count + _amt <= TOTAL_CORES);
+        require(msg.value >= getPrice(_amt), "Not enough Matic to mint.");
+        require(count + _amt <= TOTAL_CORES, "No more cores to mint!");
 
         // Take 10% of the PWRCRE sale and send it to a random
-        // address every mint.
-        payable(list[rand(count)]).transfer(msg.value / 10);
+        // address every mint.  Make sure this isn't the first purchase!
+        if (count > 0) {
+            payable(coreToAddress[rand(count)]).transfer(msg.value / 10);
+        }
 
         // Mint the total number of PWRCRES.
         uint256 i = 0;
@@ -122,10 +133,10 @@ contract Gatchi is ERC1155, Ownable {
         // balance with all current PWRCRE holders.
         if (count + _amt == TOTAL_CORES) {
             uint256 payout = address(this).balance / 10;
-            uint256 share = payout / list.length;
+            uint256 share = payout / TOTAL_CORES;
 
-            for (i = 0; i < list.length; i++) {
-                payable(list[i]).transfer(share);
+            for (i = 0; i < TOTAL_CORES; i++) {
+                payable(coreToAddress[i]).transfer(share);
             }
         }
 
@@ -134,9 +145,26 @@ contract Gatchi is ERC1155, Ownable {
     }
 
     /**
+     * @notice Make sure the new owner gets the benefits of the lottery!
+     */
+    function _beforeTokenTransfer(
+        address,
+        address,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory,
+        bytes memory
+    ) internal virtual override {
+        uint256 i;
+        for (i = 0; i < ids.length; i++) {
+            coreToAddress[i] = to;
+        }
+    }
+
+    /**
      * @notice get the token URI.
      */
-    function uri() public view returns (string memory) {
+    function uri(uint256) public view override returns (string memory) {
         return _baseURI;
     }
 }

@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 /*
  * @ title Gatchi pet!
@@ -36,10 +37,7 @@ contract Gatchi is ERC1155, Ownable {
         string name;
         address parent;
         uint256 DNA;
-        uint256 attack;
-        uint256 defense;
         uint256 reward;
-        uint256 stage;
         int256 fed;
         uint256 fedBlock;
         int256 entertained;
@@ -116,8 +114,6 @@ contract Gatchi is ERC1155, Ownable {
         gatchi[count].DNA = uint256(
             keccak256(abi.encodePacked(block.difficulty, count, bytes(name_)))
         );
-        gatchi[count].stage = 0;
-        gatchi[count].attack = 0;
 
         gatchi[count].initiated = true;
 
@@ -238,14 +234,6 @@ contract Gatchi is ERC1155, Ownable {
     function uri(uint256 _id) public view override returns (string memory) {
         require(gatchi[_id].initiated, "NONEXISTANT_TOKEN");
         return
-            string(
-                abi.encodePacked(
-                    baseURI,
-                    Strings.toString(gatchi[_id].stage),
-                    "/",
-                    Strings.toString(_id),
-                    ".json"
-                )
-            );
+            string(abi.encodePacked(baseURI, Strings.toString(_id), ".json"));
     }
 }

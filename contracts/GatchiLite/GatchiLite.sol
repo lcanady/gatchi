@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
  * @Author Lem Canady
  */
 
-contract Gatchi is ERC1155, Ownable {
+contract GatchiLte is ERC1155, Ownable {
     using Strings for string;
 
     uint256 constant RATE = 86400;

@@ -95,16 +95,11 @@ contract PWRCRE is ERC1155, Ownable {
      * @notice get a semi-random number!
      * @param _seed A seed to help randomize the number.
      */
-    function rand(uint256 _seed) private view returns (uint256) {
+    function rand(uint256 _seed) public view returns (uint256) {
         return
             uint256(
                 keccak256(
-                    abi.encodePacked(
-                        _seed,
-                        block.difficulty,
-                        block.timestamp,
-                        count
-                    )
+                    abi.encodePacked(_seed, block.difficulty, block.timestamp)
                 )
             ) % count;
     }
@@ -118,26 +113,15 @@ contract PWRCRE is ERC1155, Ownable {
         require(count + _amt <= TOTAL_CORES, "No more cores to mint!");
 
         // Take 10% of the PWRCRE sale and send it to a random
-        // address every mint.  Make sure this isn't the first purchase!
+        // address every mint.  Make sure this isn't the first purchase first
         if (count > 0) {
             payable(coreToAddress[rand(count)]).transfer(msg.value / 10);
         }
 
         // Mint the total number of PWRCRES.
-        uint256 i = 0;
+        uint256 i;
         for (i = 0; i < _amt; i++) {
-            _mint(msg.sender, count + 1, 1, "0x0");
-        }
-
-        // If this is the last mint, airdrop 10% of the contract
-        // balance with all current PWRCRE holders.
-        if (count + _amt == TOTAL_CORES) {
-            uint256 payout = address(this).balance / 10;
-            uint256 share = payout / TOTAL_CORES;
-
-            for (i = 0; i < TOTAL_CORES; i++) {
-                payable(coreToAddress[i]).transfer(share);
-            }
+            _mint(msg.sender, count + i, 1, "0x0");
         }
 
         // increase the number of PWRCRES minted.
@@ -157,7 +141,7 @@ contract PWRCRE is ERC1155, Ownable {
     ) internal virtual override {
         uint256 i;
         for (i = 0; i < ids.length; i++) {
-            coreToAddress[i] = to;
+            coreToAddress[ids[i]] = to;
         }
     }
 
@@ -166,5 +150,23 @@ contract PWRCRE is ERC1155, Ownable {
      */
     function uri(uint256) public view override returns (string memory) {
         return _baseURI;
+    }
+
+    /**
+     * @notice withdrawl the funds from the contract.
+     */
+    function withdrawl() public payable onlyOwner {
+        require(address(this).balance > 0, "Nothing to withdrawl!");
+        uint256 payout = address(this).balance / 10;
+        uint256 share = payout / count;
+
+        // Airdrop the shares!
+        uint256 i;
+        for (i = 0; i < count; i++) {
+            payable(coreToAddress[i]).transfer(share);
+        }
+
+        // Send the rest to the contract owner.
+        payable(owner()).transfer(address(this).balance);
     }
 }
